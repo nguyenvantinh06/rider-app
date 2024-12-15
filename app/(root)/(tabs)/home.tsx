@@ -1,6 +1,8 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useAuth } from "@clerk/clerk-expo";
+import * as Location from "expo-location";
 import { router } from "expo-router";
+import { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -10,20 +12,53 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import GoogleTextInput from "@/components/GoogleTextInput";
 import Map from "@/components/Map";
 import RideCard from "@/components/RideCard";
 import { icons, images } from "@/constants";
+import { useFetch } from "@/lib/fetch";
+import { useLocationStore } from "@/store";
+import { Ride } from "@/types/type";
 import { recentRides } from "@/mockData/rides";
 
 const Home = () => {
   const { user } = useUser();
   const { signOut } = useAuth();
 
+  const { setUserLocation, setDestinationLocation } = useLocationStore();
+  const loading = true;
   const handleSignOut = () => {
     signOut();
     router.replace("/(auth)/sign-in");
   };
+
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setHasPermission(false);
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+
+      const address = await Location.reverseGeocodeAsync({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!,
+      });
+
+      setUserLocation({
+        latitude: location.coords?.latitude,
+        longitude: location.coords?.longitude,
+        address: `${address[0].name}, ${address[0].region}`,
+      });
+    })();
+  }, []);
+
+  const handleDestinationPress = () => {};
 
   return (
     <SafeAreaView className="bg-general-500">
@@ -70,8 +105,9 @@ const Home = () => {
             <GoogleTextInput
               icon={icons.search}
               containerStyle="bg-white shadow-md shadow-neutral-300"
-              handlePress={() => {}}
+              handlePress={handleDestinationPress}
             />
+
             <>
               <Text className="text-xl font-JakartaBold mt-5 mb-3">
                 Your current location
