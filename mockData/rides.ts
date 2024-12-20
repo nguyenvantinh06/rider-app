@@ -1,4 +1,4 @@
-export const recentRides = [
+export const recentRidesData = [
   {
     ride_id: "1",
     origin_address: "Kathmandu, Nepal",

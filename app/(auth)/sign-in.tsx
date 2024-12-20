@@ -12,8 +12,8 @@ const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
 
   const [form, setForm] = useState({
-    email: "",
-    password: "",
+    email: "tinhnguyenclerk_test@yopmail.com",
+    password: "1234@Tinh",
   });
 
   const onSignInPress = useCallback(async () => {

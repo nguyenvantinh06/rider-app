@@ -7,6 +7,7 @@ import { useFetch } from "@/lib/fetch";
 import { calculateRegion, generateMarkersFromData } from "@/lib/map";
 import { useDriverStore, useLocationStore } from "@/store";
 import { Driver, MarkerData } from "@/types/type";
+import { driversData } from "@/mockData/driver";
 
 const Map = () => {
   const {
@@ -17,22 +18,22 @@ const Map = () => {
   } = useLocationStore();
   const { selectedDriver, setDrivers } = useDriverStore();
 
-  const { data: drivers, loading, error } = useFetch<Driver[]>("/(api)/driver");
+  // const { data: drivers, loading, error } = useFetch<Driver[]>("/(api)/driver");
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   useEffect(() => {
-    if (Array.isArray(drivers)) {
+    if (Array.isArray(driversData)) {
       if (!userLatitude || !userLongitude) return;
 
       const newMarkers = generateMarkersFromData({
-        data: drivers,
+        data: driversData,
         userLatitude,
         userLongitude,
       });
 
       setMarkers(newMarkers);
     }
-  }, [drivers, userLatitude, userLongitude]);
+  }, [driversData, userLatitude, userLongitude]);
 
   const region = calculateRegion({
     userLatitude,
@@ -40,20 +41,6 @@ const Map = () => {
     destinationLatitude,
     destinationLongitude,
   });
-
-  if (loading || (!userLatitude && !userLongitude))
-    return (
-      <View className="flex justify-between items-center w-full">
-        <ActivityIndicator size="small" color="#000" />
-      </View>
-    );
-
-  if (error)
-    return (
-      <View className="flex justify-between items-center w-full">
-        <Text>Error: {error}</Text>
-      </View>
-    );
 
   return (
     <MapView

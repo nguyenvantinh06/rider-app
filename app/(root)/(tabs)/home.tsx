@@ -20,14 +20,14 @@ import { icons, images } from "@/constants";
 import { useFetch } from "@/lib/fetch";
 import { useLocationStore } from "@/store";
 import { Ride } from "@/types/type";
-import { recentRides } from "@/mockData/rides";
+import { recentRidesData } from "@/mockData/rides";
 
 const Home = () => {
   const { user } = useUser();
   const { signOut } = useAuth();
 
   const { setUserLocation, setDestinationLocation } = useLocationStore();
-  const loading = true;
+  const loading = false;
   const handleSignOut = () => {
     signOut();
     router.replace("/(auth)/sign-in");
@@ -63,7 +63,7 @@ const Home = () => {
   return (
     <SafeAreaView className="bg-general-500">
       <FlatList
-        data={recentRides?.slice(0, 5)}
+        data={recentRidesData?.slice(0, 5)}
         renderItem={({ item }) => <RideCard ride={item} />}
         keyExtractor={(item, index) => index.toString()}
         className="px-5"
